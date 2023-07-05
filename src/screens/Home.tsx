@@ -7,6 +7,13 @@ import { ExerciseCard } from "@components/ExerciseCard";
 export function Home() {
   const [groupSelected, setGroupSelected] = useState("Costas");
   const [groups, setGroups] = useState(["Costas", "Ombro", "Perna", "Peito"]);
+  const [exercises, setExercises] = useState([
+    "Puxada Frontal",
+    "Remada Curvada",
+    "Remada Cavalinho",
+    "Puxador no triangulo",
+    "Puxada baixa com a barra",
+  ]);
 
   return (
     <VStack flex={1}>
@@ -19,7 +26,9 @@ export function Home() {
           <Group
             name={item}
             onPress={() => setGroupSelected(item)}
-            isActive={groupSelected === item}
+            isActive={
+              groupSelected.toLocaleUpperCase() === item.toLocaleUpperCase()
+            }
           />
         )}
         horizontal
@@ -35,12 +44,17 @@ export function Home() {
             Exercícios
           </Heading>
           <Text color="gray.200" fontSize="sm">
-            4
+            {exercises.length}
           </Text>
         </HStack>
 
-        <ExerciseCard />
-        <ExerciseCard />
+        <FlatList
+          data={exercises}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => <ExerciseCard />}
+          showsVerticalScrollIndicator={false}
+          _contentContainerStyle={{ paddingBottom: 20 }}
+        />
       </VStack>
     </VStack>
   );
