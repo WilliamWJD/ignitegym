@@ -3,6 +3,9 @@ import { HStack, Text, VStack, FlatList, Heading } from "native-base";
 import { Group } from "@screens/Group";
 import { useState } from "react";
 import { ExerciseCard } from "@components/ExerciseCard";
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigatorRouteProps } from "@routes/auth.routes";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function Home() {
   const [groupSelected, setGroupSelected] = useState("Costas");
@@ -14,6 +17,12 @@ export function Home() {
     "Puxador no triangulo",
     "Puxada baixa com a barra",
   ]);
+
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  function handleOpenExerciseDetails() {
+    navigation.navigate("exercise");
+  }
 
   return (
     <VStack flex={1}>
@@ -36,6 +45,7 @@ export function Home() {
         _contentContainerStyle={{ px: 8 }}
         my={10}
         maxH={10}
+        minH={10}
       />
 
       <VStack flex={1} px={8}>
@@ -51,7 +61,9 @@ export function Home() {
         <FlatList
           data={exercises}
           keyExtractor={(item) => item}
-          renderItem={({ item }) => <ExerciseCard />}
+          renderItem={({ item }) => (
+            <ExerciseCard onPress={handleOpenExerciseDetails} />
+          )}
           showsVerticalScrollIndicator={false}
           _contentContainerStyle={{ paddingBottom: 20 }}
         />
