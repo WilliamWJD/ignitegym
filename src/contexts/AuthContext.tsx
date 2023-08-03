@@ -7,6 +7,11 @@ import {
   storageUserGet,
   storageUserRemove,
 } from "@storage/storageUser";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
 
 export type AuthContextDataProps = {
   user: UserDTO;
@@ -31,13 +36,34 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     loadUserData();
   }, []);
 
+  function userAndTokenUpdate(user: UserDTO, token: string) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    setUser(user);
+  }
+
+  async function storageUserAndTokenSave(user: UserDTO, token: string) {
+    try {
+      setIsLoadingStorageData(true);
+
+      await storageUserSave(user);
+      await storageAuthTokenSave(token);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingStorageData(false);
+    }
+  }
+
   async function signIn(email: string, password: string) {
     try {
       const { data } = await api.post("/sessions", { email, password });
 
-      if (data.user) {
-        setUser(data.user);
-        await storageUserSave(data.user);
+      if (data.user && data.token) {
+        setIsLoadingStorageData(true);
+
+        await storageUserAndTokenSave(data.user, data.token);
+
+        userAndTokenUpdate(data.user, data.token);
       }
     } catch (error) {
       throw error;
@@ -48,7 +74,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     try {
       setIsLoadingStorageData(true);
       setUser({} as UserDTO);
+
       await storageUserRemove();
+      await storageAuthTokenRemove();
+
     } catch (error) {
       throw error;
     } finally {
@@ -58,10 +87,13 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   async function loadUserData() {
     try {
-      const userLogged = await storageUserGet();
+      setIsLoadingStorageData(true);
 
-      if (userLogged) {
-        setUser(userLogged);
+      const userLogged = await storageUserGet();
+      const token = await storageAuthTokenGet();
+
+      if (token && userLogged) {
+        userAndTokenUpdate(userLogged, token);
       }
     } catch (error) {
       throw error;
