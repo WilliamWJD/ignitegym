@@ -12,7 +12,7 @@ import { ExerciseDTO } from "@dtos/ExerciseDTO";
 import { Loading } from "@components/Loading";
 
 export function Home() {
-  const [groupSelected, setGroupSelected] = useState("Costas");
+  const [groupSelected, setGroupSelected] = useState("antebraço");
   const [groups, setGroups] = useState<string[]>([]);
   const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
