@@ -60,6 +60,9 @@ export function Exercise() {
         placement: "top",
         bgColor: "red.500",
       });
+
+      navigation.navigate('history');
+
     } finally {
       setSendingRegister(false);
     }
